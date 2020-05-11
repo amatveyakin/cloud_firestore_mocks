@@ -133,8 +133,12 @@ class MockDocumentReference extends Mock implements DocumentReference {
 
   @override
   Stream<DocumentSnapshot> snapshots({bool includeMetadataChanges = false}) {
-    return Stream.value(
-        MockDocumentSnapshot(this, _documentId, root, _exists()));
+    return parent()
+        .snapshots(includeMetadataChanges: includeMetadataChanges)
+        .where((s) =>
+            s.documents.where((d) => d.documentID == _documentId).isNotEmpty)
+        .map(
+            (s) => s.documents.singleWhere((d) => d.documentID == _documentId));
   }
 
   @override
