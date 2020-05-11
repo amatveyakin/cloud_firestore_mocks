@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_firestore_mocks/cloud_firestore_mocks.dart';
 import 'package:flutter/services.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:test/test.dart';
 
 import 'document_snapshot_matcher.dart';
@@ -110,6 +111,25 @@ void main() {
         emits(DocumentSnapshotMatcher('abc', {
           'name': 'Bob',
         })));
+  });
+  test('Snapshots returns document updates', () async {
+    final instance = MockFirestoreInstance();
+    unawaited(expectLater(
+        instance.collection('users').document(uid).snapshots(),
+        emitsInOrder([
+          DocumentSnapshotMatcher(uid, {
+            'name': 'Alice',
+          }),
+          DocumentSnapshotMatcher(uid, {
+            'name': 'Bob',
+          }),
+        ])));
+    await instance.collection('users').document(uid).setData({
+      'name': 'Alice',
+    });
+    await instance.collection('users').document(uid).setData({
+      'name': 'Bob',
+    });
   });
   test('Snapshots sets exists property to false if the document does not exist',
       () async {
