@@ -78,6 +78,7 @@ class MockDocumentReference extends Mock implements DocumentReference {
       }
     });
     _firestore.saveDocument(path);
+    fireSnapshotUpdate();
     return Future.value(null);
   }
 
@@ -104,6 +105,10 @@ class MockDocumentReference extends Mock implements DocumentReference {
       }
     }
     return document;
+  }
+
+  void fireSnapshotUpdate() {
+    (parent() as MockCollectionReference).fireSnapshotUpdate();
   }
 
   @override
